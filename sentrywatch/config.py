@@ -37,7 +37,9 @@ class SentrywatchConfig:
     notify_channels: List[str] = field(
         default_factory=lambda: ["watch_terminal", "notify_send", "webhook"]
     )
-    notify_webhook_url: Optional[str] = None
+    notify_webhook_url: Optional[str] = field(
+        default_factory=lambda: os.environ.get("SENTRYWATCH_WEBHOOK_URL")
+    )
     notify_cooldown_seconds: int = 300
     notify_scoring_down_alert_minutes: int = 10
     # Rule thresholds
@@ -54,9 +56,24 @@ class SentrywatchConfig:
 _config_instance: Optional[SentrywatchConfig] = None
 
 
+def load_env_file() -> None:
+    env_path = Path(".env")
+    if env_path.exists():
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+        except Exception:
+            pass
+
+
 def get_config() -> SentrywatchConfig:
     global _config_instance
     if _config_instance is None:
+        load_env_file()
         _config_instance = SentrywatchConfig()
     return _config_instance
 
