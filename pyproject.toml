@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentrywatch-firewall"
+version = "2.0.0"
+description = "Log-based Intrusion Detection & Prevention System with Advisory AI Scoring"
+authors = [{name = "Antigravity Engineer"}]
+requires-python = ">=3.10"
+dependencies = [
+    "rich>=13.0.0",
+    "requests>=2.28.0",
+]
+
+[project.scripts]
+sentrywatch = "sentrywatch.cli:main"
